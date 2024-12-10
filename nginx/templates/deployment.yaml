@@ -12,6 +12,13 @@ metadata:
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
+    argocd.argoproj.io/health-check: |
+      kind: Deployment
+      apiVersion: apps/v1
+      status: |
+        if .status.conditions[?(@.type=="Available")].status == "True"
+        then "Healthy"
+        else "Progressing"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
